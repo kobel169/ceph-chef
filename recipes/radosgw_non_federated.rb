@@ -61,7 +61,7 @@ if new_key.to_s.strip.empty?
   new_key = nil if new_key.to_s.strip.length != 40
 end
 execute 'update-ceph-radosgw-secret' do
-  command lazy { "sudo ceph-authtool #{keyring} --name=client.radosgw.gateway --add-key=#{new_key} --cap osd 'allow rwx' --cap mon 'allow rwx'" }
+  command lazy { "ceph-authtool #{keyring} --name=client.radosgw.gateway --add-key=#{new_key} --cap osd 'allow rwx' --cap mon 'allow rwx'" }
   only_if { new_key }
   only_if "test -f #{keyring}"
   sensitive true if Chef::Resource::Execute.method_defined? :sensitive
