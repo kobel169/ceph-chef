@@ -302,6 +302,8 @@ def ceph_chef_fsid_secret
       Chef::Log.info('No fsid secret found')
       nil
     end
+  elsif node['ceph']['fsid-secret']
+    node['ceph']['fsid-secret']
   else
     Chef::Log.info('No fsid secret found')
     nil
