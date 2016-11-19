@@ -179,7 +179,7 @@ if node['ceph']['osd']['devices']
         is_device=$(echo '#{osd_device['data']}'$id | egrep '/dev/(([a-z]{3,4}[0-9]$)|(cciss/c[0-9]{1}d[0-9]{1}p[0-9]$))')
         ceph-disk -v prepare --cluster #{node['ceph']['cluster']} #{dmcrypt} --fs-type #{node['ceph']['osd']['fs_type']} #{osd_device['data']}$id || exit 1
 #        ceph-osd -i $id --mkfs --mkkey || exit 1
-        cp /etc/ceph/ceph.osd.$id.keyring /var/lib/ceph/osd/ceph-$id/keyring || exit 1
+#        cp /etc/ceph/ceph.osd.$id.keyring /var/lib/ceph/osd/ceph-$id/keyring || exit 1
 #        ceph auth add osd.$id osd 'allow *' mon 'allow rwx' -i /var/lib/ceph/osd/ceph-$id/keyring
         ceph-disk -v activate #{osd_device['data']}$id/ || exit 1
         sleep 3
