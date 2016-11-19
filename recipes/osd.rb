@@ -178,7 +178,7 @@ if node['ceph']['osd']['devices']
         ceph-disk -v prepare --cluster #{node['ceph']['cluster']} #{dmcrypt} --fs-type #{node['ceph']['osd']['fs_type']} #{osd_device['data']} #{osd_device['journal']}
         ceph-osd -i #{node.name[-1]} --mkfs --mkkey
         cp /etc/ceph/ceph.osd.#{node.name[-1]}.keyring /var/lib/ceph/osd/ceph-1/keyring
-        ceph auth add osd.#{node.name[-1]} osd 'allow *' mon 'allow rwx' -i /var/lib/ceph/osd/ceph-1/keyring
+        ceph auth add osd.#{node.name[-1]} osd 'allow *' mon 'allow rwx' -i /var/lib/ceph/osd/ceph-#{node.name[-1]}/keyring
         if [[ ! -z $is_device ]]; then
           ceph-disk -v activate #{osd_device['data']}#{partitions}
         else
