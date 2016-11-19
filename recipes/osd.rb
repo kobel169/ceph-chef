@@ -173,17 +173,14 @@ if node['ceph']['osd']['devices']
     # The -v option is added to the ceph-disk script so as to get a verbose output if debugging is needed. No other reason.
     # is_ceph=$(parted --script #{osd_device['data']} print | egrep -sq '^ 1.*ceph')
     execute "ceph-disk-prepare on #{osd_device['data']}" do
+      id=#{node.name[-1].to_i - 1}}
       command <<-EOH
         is_device=$(echo '#{osd_device['data']}' | egrep '/dev/(([a-z]{3,4}[0-9]$)|(cciss/c[0-9]{1}d[0-9]{1}p[0-9]$))')
         ceph-disk -v prepare --cluster #{node['ceph']['cluster']} #{dmcrypt} --fs-type #{node['ceph']['osd']['fs_type']} #{osd_device['data']} #{osd_device['journal']}
-        ceph-osd -i #{node.name[-1]} --mkfs --mkkey
-        cp /etc/ceph/ceph.osd.#{node.name[-1]}.keyring /var/lib/ceph/osd/ceph-#{node.name[-1]}/keyring
-        ceph auth add osd.#{node.name[-1]} osd 'allow *' mon 'allow rwx' -i /var/lib/ceph/osd/ceph-#{node.name[-1]}/keyring
-        if [[ ! -z $is_device ]]; then
-          ceph-disk -v activate #{osd_device['data']}#{partitions}
-        else
-          ceph-disk -v activate #{osd_device['data']}
-        fi
+        ceph-osd -i #{id} --mkfs --mkkey
+        cp /etc/ceph/ceph.osd.#{id}.keyring /var/lib/ceph/osd/ceph-#{id}/keyring
+#        ceph auth add osd.#{id} osd 'allow *' mon 'allow rwx' -i /var/lib/ceph/osd/ceph-#{id}/keyring
+        ceph-disk -v activate #{osd_device['data']}#{id}/
         sleep 3
 
       EOH
