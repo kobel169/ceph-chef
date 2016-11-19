@@ -176,12 +176,16 @@ if node['ceph']['osd']['devices']
       command <<-EOH
         is_device=$(echo '#{osd_device['data']}' | egrep '/dev/(([a-z]{3,4}[0-9]$)|(cciss/c[0-9]{1}d[0-9]{1}p[0-9]$))')
         ceph-disk -v prepare --cluster #{node['ceph']['cluster']} #{dmcrypt} --fs-type #{node['ceph']['osd']['fs_type']} #{osd_device['data']} #{osd_device['journal']}
+        ceph-osd -i 1 --mkfs --mkkey
+        cp /etc/ceph/ceph.osd.1.keyring /var/lib/ceph/osd/ceph-1/keyring
+        ceph auth add #{node.name}.osd.1 osd 'allow *' mon 'allow rwx' -i /var/lib/ceph/osd/ceph-1/keyring
         if [[ ! -z $is_device ]]; then
           ceph-disk -v activate #{osd_device['data']}#{partitions}
         else
           ceph-disk -v activate #{osd_device['data']}
         fi
         sleep 3
+
       EOH
       # NOTE: The meaning of the uuids used here are listed above
       not_if "sgdisk -i1 #{osd_device['data']} | grep -i 4fbd7e29-9d25-41b8-afd0-062c0ceff05d" unless dmcrypt
