@@ -177,6 +177,7 @@ if node['ceph']['osd']['devices']
       command <<-EOH
         id='#{node.name[-1].to_i - 1}'
         is_device=$(echo '#{osd_device['data']}'$id | egrep '/dev/(([a-z]{3,4}[0-9]$)|(cciss/c[0-9]{1}d[0-9]{1}p[0-9]$))')
+        ln -s /var/lib/ceph/osd/ceph-$id/keyring /etc/ceph/ceph.client.osd.$id.keyring
         ceph-disk -v prepare --cluster #{node['ceph']['cluster']} #{dmcrypt} --fs-type #{node['ceph']['osd']['fs_type']} #{osd_device['data']}$id || exit 1
         ceph-disk --setuser root --setgroup root -v activate #{osd_device['data']}$id || exit 1
         sleep 3
